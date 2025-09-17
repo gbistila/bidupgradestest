@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Alpine Bid Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1E3A8A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <style>
+    :root {
+      --blue: #1E3A8A;     /* Primary Alpine blue */
+      --sky: #60A5FA;      /* Accent/hover */
+      --slate: #F1F5F9;    /* Page background */
+      --text: #1F2937;     /* Primary text */
+      --border: #CBD5E1;   /* Borders */
+      --white: #FFFFFF;    /* Cards/inputs */
+      --success: #16A34A;  /* Copied toast */
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--slate);
+      color: var(--text);
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .brand {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--blue), var(--sky));
+      display: inline-block;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 0;
+      color: var(--blue);
+      letter-spacing: 0.2px;
+    }
+
+    p.sub {
+      margin: 0 0 12px 0;
+      color: #475569;
+      font-size: 0.95rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      font-size: 17px; /* prevents iOS zoom */
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--white);
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .row .col {
+      flex: 1;
+    }
+
+    button {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.05s ease;
+    }
+    button:active { transform: translateY(1px); }
+    button:hover { background: var(--sky); }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: var(--white);
+      padding: 16px;
+      margin-top: 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .card h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.1rem;
+      color: var(--blue);
+    }
+
+    .line {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .line:last-child { border-bottom: none; }
+
+    pre {
+      white-space: pre-wrap;
+      font-size: 1rem;
+      background: var(--slate);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin: 0;
+    }
+
+    .hidden { display: none; }
+
+    .flex-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-secondary {
+      background: #0f172a;
+    }
+    .btn-secondary:hover {
+      background: #334155;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: var(--success);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      box-shadow: 0 6px 20px rgba(22,163,74,0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .toast.show { opacity: 1; }
+
+    @media (max-width: 480px) {
+      body { padding: 14px; }
+      h1 { font-size: 1.2rem; }
+      .card { padding: 14px; }
+      button { font-size: 16px; padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="brand" aria-hidden="true"></span>
+    <h1>Alpine Bid Calculator</h1>
+  </header>
+  <p class="sub">Field-fast pricing for soil removal, road base, and concrete.</p>
+
+  <div class="row">
+    <div class="col">
+      <label for="sfInput">Square feet</label>
+      <input type="number" id="sfInput" inputmode="numeric" placeholder="e.g. 800" />
+    </div>
+    <div class="col">
+      <label for="thicknessInput">Thickness (inches)</label>
+      <input type="number" id="thicknessInput" inputmode="decimal" placeholder="e.g. 4" />
+    </div>
+  </div>
+
+  <div class="flex-actions">
+    <button id="calcBtn">Calculate</button>
+
+    <label class="toggle" for="handoffToggle">
+      <input type="checkbox" id="handoffToggle" />
+      <span>Include operational handoff</span>
+    </label>
+  </div>
+
+  <div id="results" class="card hidden" aria-live="polite">
+    <h2>Bid summary</h2>
+    <div class="line"><div>Soil price</div><div id="soilPrice"></div></div>
+    <div class="line"><div>Road base price</div><div id="basePrice"></div></div>
+    <div class="line"><div>Concrete price</div><div id="cretePrice"></div></div>
+    <div class="line"><strong>Total price</strong><strong id="totPrice"></strong></div>
+  </div>
+
+  <div id="handoff" class="card hidden" aria-live="polite"></div>
+  <div class="flex-actions">
+    <button id="copyBtn" class="hidden btn-secondary">Copy handoff summary</button>
+  </div>
+
+  <div id="toast" class="toast">Copied</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
