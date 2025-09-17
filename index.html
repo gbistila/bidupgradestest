@@ -185,7 +185,7 @@
     <span class="brand" aria-hidden="true"></span>
     <h1>Alpine Bid Calculator</h1>
   </header>
-  <p class="sub">Field-fast pricing for soil removal, road base, and concrete.</p>
+  <p class="sub">Field-fast pricing for soil removal, road base, and .</p>
 
   <div class="row">
     <div class="col">
@@ -197,6 +197,11 @@
       <input type="number" id="thicknessInput" inputmode="decimal" placeholder="e.g. 4" />
     </div>
   </div>
+  <label for="lfInput">Boulder Wall Length (LF)</label>
+<input type="number" id="lfInput" placeholder="e.g. 42" />
+
+<label for="heightInput">Boulder Wall Height (feet)</label>
+<input type="number" id="heightInput" placeholder="e.g. 3" />
 
   <div class="flex-actions">
     <button id="calcBtn">Calculate</button>
@@ -211,7 +216,7 @@
     <h2>Bid summary</h2>
     <div class="line"><div>Soil price</div><div id="soilPrice"></div></div>
     <div class="line"><div>Road base price</div><div id="basePrice"></div></div>
-    <div class="line"><div>Concrete price</div><div id="cretePrice"></div></div>
+    <div class="line"><div> price</div><div id="cretePrice"></div></div>
     <div class="line"><strong>Total price</strong><strong id="totPrice"></strong></div>
   </div>
 
